@@ -1,6 +1,8 @@
 package com.company.树结构的基础部分;
 
 
+import jdk.swing.interop.SwingInterOpUtils;
+
 /**
  * @author ShiWei
  * @date 2021/3/17 - 14:10
@@ -65,6 +67,13 @@ public class BinaryTreeDemo {
         } else {
             System.out.printf("没有找到no=%d的英雄\n", 5);
         }
+
+        //测试一把节点
+        System.out.println("删除前，前序遍历");
+        binaryTree.preOrder();
+        binaryTree.delNode(5);
+        System.out.println("删除后，前序遍历");
+        binaryTree.preOrder();
     }
 }
 
@@ -74,6 +83,21 @@ class BinaryTree {
 
     public void setRoot(HeroNode root) {
         this.root = root;
+    }
+
+    //删除节点
+    public void delNode(int no) {
+        if (root != null) {
+            //如果只有一个root节点，这里立即判断root是不是就是要删除的节点
+            if (root.getNo() == no) {
+                root = null;
+            } else{
+                //递归删除
+                root.delNode(no);
+            }
+        } else {
+            System.out.println("空树，不能删除~");
+        }
     }
 
     //前序遍历
@@ -183,6 +207,32 @@ class HeroNode {
                 '}';
     }
 
+    //递归删除节点
+    //1.如果删除的节点是叶子节点，则删除该节点
+    //2.如果删除的节点是非叶子节点，则删除该子树
+    public void delNode(int no) {
+
+        //如果当前节点的左子节点不为空，并且左子节点就是要删除的节点，就将this.left=null，并且返回（结束递归删除）
+        if (this.left != null && this.left.no == no) {
+            this.left = null;
+            return;
+        }
+        //如果当前节点的右子节点不为空，并且右子节点就是要删除的节点，就将this.right=null，并且返回（结束递归删除）
+        if(this.right != null && this.right.no == no) {
+            this.right = null;
+            return;
+        }
+        //向左子树进行递归删除
+        if(this.left != null) {
+            this.left.delNode(no);
+            //注意：这儿不要写return，如果写了return，假如左子树没有删除成功，那么也就退出了，不去右子树进行删除了，错误。
+        }
+        //向右子树进行递归删除
+        if (this.right != null) {
+            this.right.delNode(no);
+        }
+    }
+
     //编写前序遍历的方法
     public void preOrder() {
         System.out.println(this); //先输出当前节点
@@ -230,7 +280,7 @@ class HeroNode {
      * @return 如果找到就返回Node，如果没有找到返回null
      */
     public HeroNode preOrderSearch(int no) {
-        System.out.println("进入前序遍历");
+        System.out.println("进入前序遍历"); //注意：要查看比较次数，这行代码一定要放在下面两行代码的前面，因为下面两行才是真正的比较。
         //比较当前节点是不是
         if (this.no == no) {
             return this;
@@ -261,7 +311,7 @@ class HeroNode {
         if (resNode != null) {
             return resNode;
         }
-        System.out.println("进入中序查找");
+        System.out.println("进入中序查找"); //注意：要查看比较次数，这行代码一定要放在下面两行代码的前面，因为下面两行才是真正的比较。
         //如果找到，则返回，如果没有找到，就和当前节点比较，如果是则返回当前节点
         if (this.no == no) {
             return this;
@@ -292,7 +342,7 @@ class HeroNode {
         if (resNode != null) {
             return resNode;
         }
-        System.out.println("进入后序查找");
+        System.out.println("进入后序查找"); //注意：要查看比较次数，这行代码一定要放在下面两行代码的前面，因为下面两行才是真正的比较。
         //如果左右子树都没有找到，就比较当前节点是不是
         if (this.no == no) {
             return this;
