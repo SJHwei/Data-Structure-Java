@@ -18,6 +18,12 @@ public class HuffmanCode {
         System.out.println("压缩后的结果是：" + Arrays.toString(huffmanCodesBytes));
         System.out.println("压缩后的长度：" + huffmanCodesBytes.length); //17
 
+
+        //测试一把byteToBitString方法，此处需要强转，从int转成byte。
+//        System.out.println(byteToBitString((byte) -88));
+        byte[] sourceBytes = decode(huffmanCodes, huffmanCodesBytes);
+        System.out.println("原来的字符串=" + new String(sourceBytes)); //"i like like like java do you like a java"
+
         //如何将数据进行解压(解码)
 
         //分步过程
@@ -46,10 +52,103 @@ public class HuffmanCode {
 
     }
 
+
+    //完成数据的解压
+    //思路：
+    //第一步：将huffmanCodeBytes [-88, ...] 重新先转成赫夫曼编码对应的二进制的字符串 "10101000..."
+    //第二步：将赫夫曼编码对应的二进制的字符串对照赫夫曼编码表转换成文本字符串 "i like like like java do you like a java"
+
+    /**
+     * 编写一个方法，完成对压缩数据的解码
+     *
+     * @param huffmanCodes 赫夫曼编码表 map
+     * @param huffmanBytes 赫夫曼编码得到的字节数组
+     * @return 就是原来的字符串对应的数组
+     */
+    private static byte[] decode(Map<Byte, String> huffmanCodes, byte[] huffmanBytes) {
+
+        //1.先得到huffmanBytes对应的二进制的字符串，形式10101000...
+        StringBuilder stringBuilder = new StringBuilder();
+        //将byte数组转成二进制的字符串
+        for (int i = 0; i < huffmanBytes.length; i++) {
+            //判断是不是最后一个字节
+            boolean flag = (i == huffmanBytes.length - 1);
+            stringBuilder.append(byteToBitString(!flag, huffmanBytes[i]));
+        }
+
+//        System.out.println("对应的二进制字符串：" + stringBuilder.toString());
+
+        //2.把字符串按照指定的赫夫曼编码进行解码
+        //把赫夫曼编码表进行调换，因为反向查询a->100，100->a
+        Map<String, Byte> map = new HashMap<>();
+        for (Map.Entry<Byte, String> entry : huffmanCodes.entrySet()) {
+            map.put(entry.getValue(), entry.getKey());
+        }
+
+        //创建一个集合，存放byte
+        ArrayList<Byte> list = new ArrayList<>();
+        //i可以理解成是索引，扫描stringBuilder
+        for (int i = 0; i < stringBuilder.length();) {
+            int count = 1; //小的计数器
+            boolean flag = true;
+            Byte b = null;
+
+            while (flag) {
+                //递增的取出key
+                String key = stringBuilder.substring(i, i + count); //i不动，让count移动，直到匹配到一个字符
+                b = map.get(key);
+                if (b == null) { //说明没有匹配到
+                    count++;
+                } else {
+                    //匹配到
+                    flag = false;
+                }
+            }
+            list.add(b);
+            i += count; //i直接移动到（i+count）
+        }
+        //当for循环结束后，list中就存放了所有的字符
+        //把list中的数据存放到byte数组，并返回
+        byte b[] = new byte[list.size()];
+        for (int i = 0; i < b.length; i++) {
+            b[i] = list.get(i);
+        }
+
+        return b;
+    }
+
+    /**
+     * 将一个byte转成一个二进制的字符串，byte没有直接转换的方法，但是integer中有一个从int到二进制字符串的转换方法。
+     *
+     * @param flag 标志是否需要补高位。如果是true，表示需要补高位，如果是false，表示不补，如果是最后一个字节，无需补高位。
+     * @param b    传入的byte
+     * @return 是该b对应的二进制的字符串（注意是按补码返回的）
+     */
+    private static String byteToBitString(boolean flag, byte b) {
+        //使用变量保存b
+        int temp = b; //将b转成int，因为后面要使用integer的转换方法将int转成二进制字符串
+
+        //如果是一个正数，还存在补高位的问题，例如如果是1，则返回的是1
+
+        //注意：最后一个可能不满八位，所以需要使用判断
+        if (flag) {
+            temp |= 256; //按位与256    1 0000 0000 | 0000 0001 => 1 0000 0001
+        }
+
+        String str = Integer.toBinaryString(temp); //注意：此处返回的是temp对应的二进制的补码，而且长度很长，所以需要截取，取后面八位
+
+        if (flag) {
+            return str.substring(str.length() - 8);
+        } else {
+            return str;
+        }
+
+    }
+
+
     //使用一个方法，将前面的方法封装起来，便于我们调用。
 
     /**
-     *
      * @param bytes 原始的字符串对应的字节数组
      * @return 是经过赫夫曼编码处理后的字节数组
      */
@@ -75,7 +174,7 @@ public class HuffmanCode {
      * huffmanCodeBytes[0]=-88
      * 原因：字符串形式太长，人家原先长度为40，现在成了133，所以要转为byte数组，节省空间，byte数组的长度为17.
      */
-    private static byte[] zip (byte[] bytes, Map<Byte, String> huffmanCodes) {
+    private static byte[] zip(byte[] bytes, Map<Byte, String> huffmanCodes) {
 
         //1.利用huffmanCodes将bytes转成赫夫曼编码对应的字符串
         StringBuilder stringBuilder = new StringBuilder();
