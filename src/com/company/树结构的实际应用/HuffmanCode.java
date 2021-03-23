@@ -12,11 +12,17 @@ public class HuffmanCode {
     public static void main(String[] args) {
 
         //测试压缩文件
-        String srcFile = "d://src.bmp";
-        String dstFile = "d://dst.zip";
+//        String srcFile = "d://src.bmp";
+//        String dstFile = "d://dst.zip";
+//
+//        zipFile(srcFile, dstFile);
+//        System.out.println("压缩文件ok~~");
 
-        zipFile(srcFile, dstFile);
-        System.out.println("压缩文件ok~~");
+        //测试解压文件
+        String zipFile = "d://dst.zip";
+        String dstFile = "d://src2.bmp";
+        unZipFile(zipFile, dstFile);
+        System.out.println("解压成功！");
 
 
         /*
@@ -65,6 +71,49 @@ public class HuffmanCode {
 
     }
 
+
+    //编写一个方法，完成对压缩文件的解压
+
+    /**
+     * @param zipFile 准备解压的文件
+     * @param dstFile 将文件解压到哪个路径
+     */
+    public static void unZipFile(String zipFile, String dstFile) {
+
+        //定义文件输入流
+        InputStream is = null;
+        //定义一个对象输入流
+        ObjectInputStream ois = null;
+        //定义文件的输出流
+        OutputStream os = null;
+        try {
+            //创建文件输入流
+            is = new FileInputStream(zipFile);
+            //创建一个和is关联的对象输入流
+            ois = new ObjectInputStream(is);
+            //读取byte数组huffmanBytes
+            byte[] huffmanBytes = (byte[]) ois.readObject();
+            //读取赫夫曼编码表
+            Map<Byte, String> huffmanCodes = (Map<Byte, String>) ois.readObject();
+            
+            //解码
+            byte[] bytes = decode(huffmanCodes, huffmanBytes);
+            //将bytes写入到目标文件
+            os = new FileOutputStream(dstFile);
+            //写数据到dstFile文件中
+            os.write(bytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                os.close();
+                ois.close();
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     //编写方法，将一个文件进行压缩
 
