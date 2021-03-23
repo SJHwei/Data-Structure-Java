@@ -1,5 +1,6 @@
 package com.company.树结构的实际应用;
 
+import java.io.*;
 import java.util.*;
 
 /**
@@ -9,6 +10,16 @@ import java.util.*;
 public class HuffmanCode {
 
     public static void main(String[] args) {
+
+        //测试压缩文件
+        String srcFile = "d://src.bmp";
+        String dstFile = "d://dst.zip";
+
+        zipFile(srcFile, dstFile);
+        System.out.println("压缩文件ok~~");
+
+
+        /*
         String content = "i like like like java do you like a java";
         byte[] contentBytes = content.getBytes();
         System.out.println("原字符串的长度：" + contentBytes.length); //40
@@ -23,6 +34,8 @@ public class HuffmanCode {
 //        System.out.println(byteToBitString((byte) -88));
         byte[] sourceBytes = decode(huffmanCodes, huffmanCodesBytes);
         System.out.println("原来的字符串=" + new String(sourceBytes)); //"i like like like java do you like a java"
+        */
+
 
         //如何将数据进行解压(解码)
 
@@ -50,6 +63,55 @@ public class HuffmanCode {
 
         */
 
+    }
+
+
+    //编写方法，将一个文件进行压缩
+
+    /**
+     * @param srcFile 你传入的希望压缩的文件的全路径
+     * @param dstFile 我们压缩后将压缩文件放到哪个目录
+     */
+    public static void zipFile(String srcFile, String dstFile) {
+
+        //创建输出流
+        OutputStream os = null;
+        ObjectOutputStream oos = null;
+        //创建文件输入流
+        FileInputStream is = null;
+
+        try {
+            //创建文件的输入流
+            is = new FileInputStream(srcFile);
+            //创建一个和源文件大小一样的byte[]
+            //available是fileinputstream类的一个成员方法，作用是返回一个剩余的字节数的估计。类型是int。
+            byte[] b = new byte[is.available()];
+            //读取文件
+            is.read(b);
+            //直接对源文件压缩
+            byte[] huffmanBytes = huffmanZip(b);
+            //创建文件的输出流，存放压缩文件
+            os = new FileOutputStream(dstFile);
+            //创建一个和文件输出流关联的ObjectOutputStream
+            oos = new ObjectOutputStream(os); //os是节点流，oos是包装流(处理流)。
+            //把赫夫曼编码后的字节数组写入压缩文件
+            oos.writeObject(huffmanBytes);
+
+            //这里我们以对象流的方式写入赫夫曼编码，是为了以后我们恢复源文件时使用
+            //注意：一定要把赫夫曼编码写入压缩文件
+            oos.writeObject(huffmanCodes);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+                oos.close();
+                os.close(); //此处应该不用关闭节点流，关闭包装流时就自动关闭节点流了
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 
@@ -88,7 +150,7 @@ public class HuffmanCode {
         //创建一个集合，存放byte
         ArrayList<Byte> list = new ArrayList<>();
         //i可以理解成是索引，扫描stringBuilder
-        for (int i = 0; i < stringBuilder.length();) {
+        for (int i = 0; i < stringBuilder.length(); ) {
             int count = 1; //小的计数器
             boolean flag = true;
             Byte b = null;
