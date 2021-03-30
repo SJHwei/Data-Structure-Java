@@ -11,7 +11,8 @@ import java.util.List;
 public class BinarySearch {
 
     public static void main(String[] args) {
-        int arr[] = {1, 8, 10, 89, 1000, 1000, 1234};
+//        int arr[] = {1, 8, 10, 89, 1000, 1000, 1234};
+        int arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
 
 //        int resIndex = binarySearch(arr, 0, arr.length - 1, 88);
 //        System.out.println("resIndex=" + resIndex);
@@ -49,15 +50,16 @@ public class BinarySearch {
 
     /**
      * 完成课后思考题：
-     *     当一个有序数组中，有多个相同的数值时，如何将所有的数值都查找到。例如：{1,8,10,89,1000,1000,1234}中查找1000。
-     *
+     * 当一个有序数组中，有多个相同的数值时，如何将所有的数值都查找到。例如：{1,8,10,89,1000,1000,1234}中查找1000。
+     * <p>
      * 思路分析：
-     *     1.在找到mid值时，不要马上返回；
-     *     2.向mid索引值的左边扫描，将所有满足1000的元素的下标，加入到集合ArrayList
-     *     3.向mid索引值的右边扫描，将所有满足1000的元素的下标，加入到集合ArrayList、
-     *     4.将ArrayList返回
+     * 1.在找到mid值时，不要马上返回；
+     * 2.向mid索引值的左边扫描，将所有满足1000的元素的下标，加入到集合ArrayList
+     * 3.向mid索引值的右边扫描，将所有满足1000的元素的下标，加入到集合ArrayList、
+     * 4.将ArrayList返回
      */
     public static List<Integer> binarySearch2(int[] arr, int left, int right, int findVal) {
+        System.out.println("hello");
 
         //当left>right时，说明递归整个数组，但是没有找到
         if (left > right) {
