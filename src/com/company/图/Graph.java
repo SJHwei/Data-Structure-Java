@@ -6,7 +6,7 @@ import java.util.Arrays;
 /**
  * @author ShiWei
  * @date 2021/4/1 - 14:07
- *
+ * <p>
  * 注意：该图是无向图
  */
 public class Graph {
@@ -14,6 +14,7 @@ public class Graph {
     private ArrayList<String> vertexList; //存储顶点的集合，此处之所以使用arraylist，是因为它的底层是数组，可以通过元素取得下标
     private int[][] edges; //存储图对应的邻接矩阵
     private int numOfEdges; //表示边的个数
+    private boolean[] isVisited; //定义数组boolean[]，记录某个节点是否被访问
 
     public static void main(String[] args) {
         //测试一把图是创建ok
@@ -35,10 +36,14 @@ public class Graph {
         //显示邻接矩阵
         graph.showGraph();
 
+        //测试一把，我们的dfs遍历
+        System.out.println("深度遍历");
+        graph.dfs();
     }
 
     /**
      * 构造器
+     *
      * @param n
      */
     public Graph(int n) {
@@ -46,7 +51,85 @@ public class Graph {
         vertexList = new ArrayList<String>(n);
         edges = new int[n][n];
         numOfEdges = 0;
+        isVisited = new boolean[n];
     }
+
+    /**
+     * 得到第一个邻接节点的下标w
+     *
+     * @param index 当前节点的下标
+     * @return 如果存在就返回对应的下标，否则返回-1
+     */
+    public int getFirstNeighhbor(int index) {
+        for (int i = 0; i < vertexList.size(); i++) {
+            if (edges[index][i] > 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 根据前一个邻接节点的下标获取下一个邻接节点的小标
+     *
+     * @param v1 当前节点的下标
+     * @param v2 当前节点的前一个邻接节点的下标
+     * @return
+     */
+    public int getNextNeighbor(int v1, int v2) {
+        for (int i = v2 + 1; i < vertexList.size(); i++) {
+            if (edges[v1][i] > 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 深度优先遍历算法
+     * 该方法是针对一个节点的
+     *
+     * @param isVisited
+     * @param i         i第一次是0
+     */
+    private void dfs(boolean[] isVisited, int i) {
+        //首先我们访问该节点，输出
+        System.out.print(getValueByIndex(i) + "->");
+        //将节点设置为已经访问
+        isVisited[i] = true;
+        //查找节点i的第一个邻接节点w
+        int w = getFirstNeighhbor(i);
+        while (w != -1) {
+            if (!isVisited[w]) {
+                dfs(isVisited, w);
+            }
+            //如果w节点已经被访问过
+            w = getNextNeighbor(i, w);
+        }
+    }
+
+    /**
+     * 对dfs进行一个重载，遍历我们所有的节点，并进行dfs
+     */
+    public void dfs() {
+        //遍历所有的节点，进行dfs[回溯]
+        for (int i = 0; i < getNumOfVertex(); i++) {
+            if (!isVisited[i]) {
+                dfs(isVisited, i);
+            }
+        }
+    }
+
+    /**
+     * 得到第一个未被访问过的邻接节点的下标w
+     * @param index
+     * @return public int getFirstUnvisitedNeighbor(int index) {
+    for (int i = 0; i < vertexList.size(); i++) {
+    if (edges[index][i] > 0) {
+    return i;
+    }
+    }
+    }*/
 
     /**
      * 插入节点
@@ -57,8 +140,9 @@ public class Graph {
 
     /**
      * 添加边
-     * @param v1 表示点的下标即对应第几个顶点
-     * @param v2 表示第二个顶点对应的下标
+     *
+     * @param v1     表示点的下标即对应第几个顶点
+     * @param v2     表示第二个顶点对应的下标
      * @param weight
      */
     public void insertEdge(int v1, int v2, int weight) {
@@ -112,18 +196,18 @@ public class Graph {
     //当数组中元素和下标有明确对应关系时，值和下标可以分开使用，之间的对应关系默认即可，不需要非得将两者联系起来。
     /**
      * 添加边和该边的两个顶点
-    public void add(String source, String target, int weight) {
-        //首先将顶点保存到列表中
-        vertexList.add(source);
-        vertexList.add(target);
-        //根据元素得到下标
-        int sourceIndex = vertexList.indexOf(source);
-        int targetIndex = vertexList.indexOf(target);
-        //根据下标将该边存入邻接矩阵中
-        edges[sourceIndex][targetIndex] = weight;
-        //该图是无向图
-        edges[targetIndex][sourceIndex] = weight;
-    }
+     public void add(String source, String target, int weight) {
+     //首先将顶点保存到列表中
+     vertexList.add(source);
+     vertexList.add(target);
+     //根据元素得到下标
+     int sourceIndex = vertexList.indexOf(source);
+     int targetIndex = vertexList.indexOf(target);
+     //根据下标将该边存入邻接矩阵中
+     edges[sourceIndex][targetIndex] = weight;
+     //该图是无向图
+     edges[targetIndex][sourceIndex] = weight;
+     }
      */
 
 }
