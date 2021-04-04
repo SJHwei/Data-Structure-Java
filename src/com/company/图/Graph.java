@@ -1,7 +1,11 @@
 package com.company.图;
 
+import javax.swing.text.html.ListView;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author ShiWei
@@ -39,6 +43,11 @@ public class Graph {
         //测试一把，我们的dfs遍历
         System.out.println("深度遍历");
         graph.dfs();
+        System.out.println();
+        //测试一把，我们的bfs遍历
+        System.out.println("广度优先");
+        graph.bfs();
+
     }
 
     /**
@@ -112,6 +121,7 @@ public class Graph {
      * 对dfs进行一个重载，遍历我们所有的节点，并进行dfs
      */
     public void dfs() {
+        isVisited = new boolean[5]; //将标记数组置空，防止干扰
         //遍历所有的节点，进行dfs[回溯]
         for (int i = 0; i < getNumOfVertex(); i++) {
             if (!isVisited[i]) {
@@ -119,6 +129,97 @@ public class Graph {
             }
         }
     }
+
+    /**
+     * 对bfs进行一个重载，遍历所有的节点，并进行bfs
+     */
+    public void bfs() {
+        isVisited = new boolean[5]; //将标记数组置空，防止dfs的干扰
+        //遍历所有的节点，进行bfs
+        for (int i = 0; i < getNumOfVertex(); i++) {
+            if (!isVisited[i]) {
+                bfs(isVisited, i);
+            }
+        }
+    }
+
+    /**
+     * 对一个节点进行广度优先搜索遍历的方法
+     * @param isVisited
+     * @param i
+     */
+    public void bfs(boolean[] isVisited, int i) {
+        int u; //表示队列的头结点对应的下标
+        int w; //邻接节点w
+        //队列，记录节点访问的顺序
+        LinkedList<Integer> queue = new LinkedList<>();
+        //访问节点，输出节点信息
+        System.out.print(getValueByIndex(i) + "=>");
+        //标记为已访问
+        isVisited[i] = true;
+        //将节点加入队列
+        queue.addLast(i);
+
+        while (queue.isEmpty()) {
+            //取出队列的头结点下标
+            u = queue.removeLast();
+            //得到第一个邻接节点的下标w
+            w = getFirstNeighhbor(u);
+            if (w != -1) { //找到
+                //是否访问过
+                if (!isVisited[w]) {
+                    System.out.print(getValueByIndex(w) + "=>");
+                    //标记已经访问过
+                    isVisited[w] = true;
+                    //入队
+                    queue.addFirst(w);
+                } else {
+                    //以u为前驱点，找到w后面的下一个邻接节点
+                    w = getNextNeighbor(u, w); //体现出我们的广度优先
+                }
+            }
+        }
+    }
+
+    //自己写的
+    /**
+     * 对一个节点进行广度优先搜索遍历的方法
+     * @param isVisited
+     * @param i
+
+    public void bfs(boolean[] isVisited, int i) {
+        int u; //表示队列的头结点对应的下标
+        int w; //邻接节点w
+        LinkedList<Integer> queue = new LinkedList(); //队列，记录节点访问的顺序
+
+        //1.访问初始节点并将该节点的下标加入队列，并标记为已访问
+        System.out.print(vertexList.get(i) + "->");
+        queue.addFirst(i);
+        isVisited[i] = true;
+
+        //2.当队列非空时，取出队列中的头节点，并遍历其邻接节点
+        while (!queue.isEmpty()) {
+            //取出队列的头结点下标
+            u = (int)queue.removeLast();
+            //遍历邻接节点
+            for (int k = 0; k < vertexList.size(); k++) {
+                if (edges[u][k] > 0) {
+                    //如果当前邻接节点已被访问过，则跳过，如果没有被访问过，则进行访问
+                    if (!isVisited[k]) {
+                        //访问当前邻接节点
+                        System.out.print(vertexList.get(k) + "->");
+                        //将当前已访问的邻接节点加入队列
+                        queue.addFirst(k);
+                        //标记当前邻接节点为已访问
+                        isVisited[k] = true;
+                    } else {
+                        continue;
+                    }
+                }
+            }
+        }
+    }
+     */
 
     /**
      * 得到第一个未被访问过的邻接节点的下标w
