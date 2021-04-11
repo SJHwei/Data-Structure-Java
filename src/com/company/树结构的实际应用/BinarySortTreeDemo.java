@@ -213,8 +213,6 @@ class BstNode {
         }
     }
 
-
-
     @Override
     public String toString() {
         return "BstNode{" +
@@ -225,7 +223,11 @@ class BstNode {
     //添加节点的方法
     //递归的形式添加节点，注意需要满足二叉排序树的要求
     public void add(BstNode node) {
-        if (node == null) {
+//        if (node == null) {
+//            return;
+//        }
+        if (this.value == node.value) {
+            System.out.println("该二叉排序树中已有该节点，故插入节点失败");
             return;
         }
 

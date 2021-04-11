@@ -9,8 +9,8 @@ public class BinaryTreePractice {
     public static void main(String[] args) {
         //创建一棵二叉树
         BinaryTree binaryTree1 = new BinaryTree();
-        BinaryTreeNode node1 = new BinaryTreeNode(1);
-        BinaryTreeNode node2 = new BinaryTreeNode(2);
+        BinaryTreeNode node1 = new BinaryTreeNode(2);
+        BinaryTreeNode node2 = new BinaryTreeNode(1);
         BinaryTreeNode node3 = new BinaryTreeNode(3);
         binaryTree1.setRoot(node1);
         node1.setLeft(node2);
@@ -28,8 +28,11 @@ public class BinaryTreePractice {
 //        binaryTree1.plusOne();
 //        System.out.println(binaryTree1.getRoot());
         //测试二叉树的isSameTree方法
-        boolean sameTree = binaryTree1.isSameTree(node11);
-        System.out.println("sameTree = " + sameTree);
+//        boolean sameTree = binaryTree1.isSameTree(node11);
+//        System.out.println("sameTree = " + sameTree);
+        //测试判断BST的合法性的静态方法
+        boolean validBST = BinaryTree.isValidBST(node1);
+        System.out.println("validBST = " + validBST);
     }
 }
 
@@ -92,6 +95,52 @@ class BinaryTree {
             sameRightTree = true;
         }
         return sameLeftTree && sameRightTree;
+    }
+
+    /**
+     * 对判断该二叉树是否是二叉搜索树方法进行重载
+     *
+     * @param root
+     * @return
+     */
+    public static boolean isValidBST(BinaryTreeNode root) {
+        if (root == null || (root != null && root.getLeft() == null && root.getRight() == null)) {
+            return true;
+        } else {
+            return isValidBST(root, null, null);
+        }
+    }
+
+    /**
+     *
+     * @param root
+     * @param min
+     * @param max
+     * @return
+     */
+    private static boolean isValidBST(BinaryTreeNode root, BinaryTreeNode min, BinaryTreeNode max) {
+
+        if (min != null && root.getVal() < min.getVal()) {
+            return false;
+        }
+        if (max != null && root.getVal() > max.getVal()) {
+            return false;
+        }
+
+        boolean leftIs = false;
+        if (root.getLeft() == null) {
+            leftIs = true;
+        } else {
+            leftIs = isValidBST(root.getLeft(), min, root);
+        }
+
+        boolean rightIs = false;
+        if (root.getRight() == null) {
+            rightIs = true;
+        } else {
+            rightIs = isValidBST(root.getRight(), root, max);
+        }
+        return leftIs && rightIs;
     }
 }
 
